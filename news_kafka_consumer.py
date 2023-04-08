@@ -1,5 +1,6 @@
 import json
 from kafka import KafkaConsumer
+from kafka_util import KafkaUtil
 import textblob as tb
 import logging
 
@@ -26,12 +27,13 @@ def process_news_article(article):
         article (dict): News article
     """
     if not article["title"]:
-        return
+        return None
     blob = tb.TextBlob(article["title"])
     print(f"Title: {article['title']}, Polarity: {blob.sentiment.polarity}, Subjectivity: {blob.sentiment.subjectivity}")
+    return {"title": article["title"], "source" : article["source"]["name"], "polarity": blob.sentiment.polarity, "subjectivity": blob.sentiment.subjectivity}
 
 
-def consume_news(consumer):
+def consume_news(consumer, producer) -> dict:
     """Consume news articles from Kafka.
 
     Args:
@@ -39,7 +41,10 @@ def consume_news(consumer):
     """
     try:
         for message in consumer:
-            process_news_article(message.value)
+            sentiment_dict = process_news_article(message.value)
+            if not sentiment_dict:
+                continue
+            producer.send("news_sentiment", sentiment_dict)
     except Exception as e:
         logging.error(f"Error while consuming messages: {e}")
     finally:
@@ -49,7 +54,8 @@ def main():
     bootstrap_servers = ["localhost:9092"]
     topic = "news"
     consumer = create_kafka_consumer(bootstrap_servers, topic)
-    consume_news(consumer)
+    producer = KafkaUtil.create_kafka_producer(bootstrap_servers)
+    consume_news(consumer, producer)
 
 if __name__ == "__main__":
     main()

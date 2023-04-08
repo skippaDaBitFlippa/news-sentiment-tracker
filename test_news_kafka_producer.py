@@ -1,8 +1,7 @@
 import unittest
-from unittest.mock import MagicMock, patch
-from news_kafka_producer import fetch_src_news, get_sources, send_news_to_kafka, create_kafka_producer
+from unittest.mock import MagicMock
+from news_kafka_producer import fetch_src_news, get_sources, send_news_to_kafka
 from kafka import KafkaProducer
-from newsapi import NewsApiClient
 
 class TestNewsKafkaProducer(unittest.TestCase):
     def test_fetch_src_news(self):
@@ -38,13 +37,6 @@ class TestNewsKafkaProducer(unittest.TestCase):
         self.assertEqual(count, 2)
         producer_mock.send.assert_called()
 
-    def test_create_kafka_producer(self):
-        with patch("kafka.KafkaProducer.__init__", return_value=None):
-            bootstrap_servers = ["localhost:9092"]
-            producer = create_kafka_producer(bootstrap_servers)
-
-            # Check if the KafkaProducer instance is created
-            self.assertIsInstance(producer, KafkaProducer)
 
 if __name__ == "__main__":
     unittest.main()
