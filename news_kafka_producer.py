@@ -1,10 +1,10 @@
 import sys
 import logging
-import newsapi.newsapi_client as NewsApiClient
+from newsapi import newsapi_client
 from kafka_util import KafkaUtil
 from kafka import KafkaProducer
 
-def fetch_src_news(source: str, news_client: NewsApiClient):
+def fetch_src_news(source: str, news_client):
     news_data = news_client.get_everything(
         q=" OR ".join(source),
         language="en",
@@ -15,7 +15,7 @@ def fetch_src_news(source: str, news_client: NewsApiClient):
         return None
     return news_data
 
-def get_sources(news_client: NewsApiClient):
+def get_sources(news_client):
     sources = news_client.get_sources()
     if sources["status"] != "ok":
         return None
@@ -30,7 +30,7 @@ def send_news_to_kafka(producer: KafkaProducer, news_data: dict):
 
 
 def main():
-    news_client = NewsApiClient(api_key='abf17ef31c434fbcbcd20521f497e7aa')
+    news_client = newsapi_client.NewsApiClient(api_key='abf17ef31c434fbcbcd20521f497e7aa')
 
     sources: list = get_sources(news_client)
     if not sources:
