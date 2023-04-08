@@ -1,17 +1,10 @@
 import unittest
 from unittest.mock import MagicMock, patch
-from news_kafka_consumer import create_kafka_consumer, process_news_article, consume_news
+from news_kafka_consumer import process_news_article, consume_news
 from kafka import KafkaConsumer, KafkaProducer
 from kafka.consumer.fetcher import ConsumerRecord
 
 class TestConsumer(unittest.TestCase):
-    def test_create_kafka_consumer(self):
-        with patch("kafka.KafkaConsumer.__init__", return_value=None):
-            bootstrap_servers = ["localhost:9092"]
-            topic = "news"
-            consumer = create_kafka_consumer(bootstrap_servers, topic)
-            self.assertIsInstance(consumer, KafkaConsumer)
-
     def test_process_news_article(self):
         article = {"title": "Sample article", "source": {"name": "Sample Source"}}
         result = process_news_article(article)

@@ -1,24 +1,7 @@
-import json
-from kafka import KafkaConsumer
 from kafka_util import KafkaUtil
 import textblob as tb
 import logging
-
-def create_kafka_consumer(bootstrap_servers, topic):
-    """Create a Kafka Consumer client.
-
-    Args:
-        bootstrap_servers (list): List of host/port pairs to use for establishing the initial connection to the Kafka cluster
-        topic (str): Topic name
-
-    Returns:
-        KafkaConsumer: A Kafka Consumer client
-    """
-    return KafkaConsumer(
-        topic,
-        bootstrap_servers=bootstrap_servers,
-        value_deserializer=lambda x: json.loads(x.decode("utf-8")),
-    )
+from kafka_util import KafkaUtil
 
 def process_news_article(article):
     """Process news article.
@@ -53,7 +36,7 @@ def consume_news(consumer, producer) -> dict:
 def main():
     bootstrap_servers = ["localhost:9092"]
     topic = "news"
-    consumer = create_kafka_consumer(bootstrap_servers, topic)
+    consumer = KafkaUtil.create_kafka_consumer(bootstrap_servers, topic)
     producer = KafkaUtil.create_kafka_producer(bootstrap_servers)
     consume_news(consumer, producer)
 
