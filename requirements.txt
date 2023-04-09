@@ -1,3 +1,4 @@
 kafka-python
 textblob
 newsapi-python
+psycopg2-binary

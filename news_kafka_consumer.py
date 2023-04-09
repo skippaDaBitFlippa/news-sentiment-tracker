@@ -12,8 +12,7 @@ def process_news_article(article):
     if not article["title"]:
         return None
     blob = tb.TextBlob(article["title"])
-    print(f"Title: {article['title']}, Polarity: {blob.sentiment.polarity}, Subjectivity: {blob.sentiment.subjectivity}")
-    return {"title": article["title"], "source" : article["source"]["name"], "polarity": blob.sentiment.polarity, "subjectivity": blob.sentiment.subjectivity}
+    return {"title": article["title"], "publishedAt": article["publishedAt"], "source" : article["source"]["name"], "polarity": blob.sentiment.polarity, "subjectivity": blob.sentiment.subjectivity}
 
 
 def consume_news(consumer, producer) -> dict:

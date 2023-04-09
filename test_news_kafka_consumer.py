@@ -6,13 +6,14 @@ from kafka.consumer.fetcher import ConsumerRecord
 
 class TestConsumer(unittest.TestCase):
     def test_process_news_article(self):
-        article = {"title": "Sample article", "source": {"name": "Sample Source"}}
+        article = {"title": "Sample article", "source": {"name": "Sample Source"}, "publishedAt": "2020-01-01"}
         result = process_news_article(article)
         self.assertEqual(result, {
             "title": "Sample article",
             "source": "Sample Source",
             "polarity": 0.0,
-            "subjectivity": 0.0
+            "subjectivity": 0.0,
+            "publishedAt": "2020-01-01"
         })
     
     def test_process_news_article_with_none_title(self):
@@ -34,7 +35,7 @@ class TestConsumer(unittest.TestCase):
             timestamp=0,
             timestamp_type=0,
             key=None,
-            value={"title": "Sample article", "source": {"name": "Sample Source"}},
+            value={"title": "Sample article", "source": {"name": "Sample Source"}, "publishedAt": "2020-01-01"},
             headers=[],
             checksum=None,
             serialized_key_size=-1,
@@ -52,16 +53,18 @@ class TestConsumer(unittest.TestCase):
                 "title": "Sample article",
                 "source": "Sample Source",
                 "polarity": 0.5,
-                "subjectivity": 0.1
+                "subjectivity": 0.1,
+                "publishedAt": "2020-01-01"
             }
 
             consume_news(consumer_mock, producer_mock)
-            process_news_article_mock.assert_called_with({"title": "Sample article", "source": {"name": "Sample Source"}})
+            process_news_article_mock.assert_called_with({"title": "Sample article", "source": {"name": "Sample Source"}, "publishedAt": "2020-01-01"})
             producer_mock.send.assert_called_with("news_sentiment", {
                 "title": "Sample article",
                 "source": "Sample Source",
                 "polarity": 0.5,
-                "subjectivity": 0.1
+                "subjectivity": 0.1,
+                "publishedAt": "2020-01-01"
             })
             
 
