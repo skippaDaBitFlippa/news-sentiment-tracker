@@ -1,5 +1,7 @@
 import sys
 import logging
+import schedule
+import time
 from newsapi import newsapi_client
 from kafka_util import KafkaUtil
 from kafka import KafkaProducer
@@ -29,7 +31,7 @@ def send_news_to_kafka(producer: KafkaProducer, news_data: dict):
     return count
 
 
-def main():
+def news_api_job():
     news_client = newsapi_client.NewsApiClient(api_key='abf17ef31c434fbcbcd20521f497e7aa')
 
     sources: list = get_sources(news_client)
@@ -50,6 +52,13 @@ def main():
     producer.close()
 
     logging.info(f"Finsihed fetching news articles from {len(sources)} sources ")
+
+def main():
+    schedule.every(30).seconds.do(news_api_job)
+    while True:
+        schedule.run_pending()
+        time.sleep(1)
+
 
 if __name__ == "__main__":
     main()
