@@ -1,0 +1,66 @@
+version: "3.9"
+
+services:
+  zookeeper:
+    image: confluentinc/cp-zookeeper:latest
+    environment:
+      - ZOOKEEPER_CLIENT_PORT=2181
+      - ZOOKEEPER_TICK_TIME=2000
+  
+  kafka:
+    image: confluentinc/cp-kafka:latest
+    environment:
+      - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092
+      - KAFKA_BROKER_ID=1
+      - KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=1
+      - KAFKA_NUM_PARTITIONS=1
+      - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
+  
+  kafka_consumer:
+    build: .
+    image: docker.io/library/news_sentiment
+    command: ["news_kafka_consumer.py"]
+    depends_on:
+      - kafka
+    environment:
+      - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+
+  kafka_producer:
+    build: .
+    image: docker.io/library/news_sentiment
+    command: ["news_kafka_producer.py"]
+    depends_on:
+      - kafka
+    environment:
+      - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+
+  kafka_storer:
+    build: .
+    image: docker.io/library/news_sentiment
+    command: ["news_kafka_storer.py"]
+    depends_on:
+      - kafka
+      - postgres
+    environment:
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_USER=postgres
+      - DB_PASSWORD=your_password
+      - DB_NAME=chetsharma
+      - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+  
+  postgres:
+    image: postgres:13
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: your_password
+      POSTGRES_DB: chetsharma
+    ports:
+      - "5432:5432"
+    volumes:
+          - postgres_data:/var/lib/postgresql/data
+          - ./db:/docker-entrypoint-initdb.d
+
+
+volumes:
+  postgres_data:

@@ -38,8 +38,7 @@ def news_api_job():
     if not sources:
         logging.error("Error fetching sources")
         sys.exit(1)
-    bootstrap_servers = ["localhost:9092"]
-    producer = KafkaUtil.create_kafka_producer(bootstrap_servers)
+    producer = KafkaUtil.create_kafka_producer()
     for source in sources:
         news_data = fetch_src_news(source, news_client)
         if not news_data:

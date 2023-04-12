@@ -33,10 +33,9 @@ def consume_news(consumer, producer) -> dict:
         consumer.close()
 
 def main():
-    bootstrap_servers = ["localhost:9092"]
     topic = "news"
-    consumer = KafkaUtil.create_kafka_consumer(bootstrap_servers, topic)
-    producer = KafkaUtil.create_kafka_producer(bootstrap_servers)
+    consumer = KafkaUtil.create_kafka_consumer(topic)
+    producer = KafkaUtil.create_kafka_producer()
     consume_news(consumer, producer)
 
 if __name__ == "__main__":
