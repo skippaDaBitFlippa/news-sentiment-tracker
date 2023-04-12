@@ -32,7 +32,7 @@ def send_news_to_kafka(producer: KafkaProducer, news_data: dict):
 
 
 def news_api_job():
-    news_client = newsapi_client.NewsApiClient(api_key='abf17ef31c434fbcbcd20521f497e7aa')
+    news_client = newsapi_client.NewsApiClient(api_key='<NEWS-API_KEY>')
 
     sources: list = get_sources(news_client)
     if not sources:
